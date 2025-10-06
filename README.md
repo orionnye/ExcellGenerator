@@ -1,4 +1,4 @@
-# Excel Generator
+# ExcellGenerator
 
 A React TypeScript web application that allows you to select a folder and count the files within it. This is the foundation for a larger Excel generation tool.
 
@@ -6,6 +6,7 @@ A React TypeScript web application that allows you to select a folder and count 
 
 - 📁 Folder selection via File System Access API or manual path input
 - 📊 File counting and display
+- 📥 Download file count reports as text files
 - 🎨 Clean, responsive UI
 - ⚡ Real-time scanning status
 - 🛡️ Error handling and validation
@@ -34,7 +35,10 @@ src/
 ├── hooks/
 │   └── useFolderScanner.ts   # Folder scanning logic
 ├── types/
-│   └── FolderData.ts         # TypeScript type definitions
+│   ├── FolderData.ts         # TypeScript type definitions
+│   └── FileSystemAccess.d.ts # File System Access API types
+├── utils/
+│   └── fileDownload.ts       # File download utilities
 ├── App.tsx                   # Main application component
 ├── App.css                   # Application styles
 ├── index.tsx                 # Application entry point
@@ -44,9 +48,15 @@ src/
 ## Current Functionality
 
 - Select folders using browser's native folder picker (Chrome/Edge)
-- Manual folder path input as fallback
+- Recursively scan directories and count all files
 - Display file count and list of files found
+- Download comprehensive file count reports as text files
 - Responsive design for mobile and desktop
+
+## Browser Support
+
+- ✅ **Chrome/Edge/Opera**: Full File System Access API support
+- ❌ **Firefox/Safari**: Shows helpful message about browser requirements
 
 ## Future Enhancements
 
