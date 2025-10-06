@@ -5,13 +5,13 @@ import FolderResults from './components/FolderResults';
 import './App.css';
 
 const App: React.FC = () => {
-	const { folderData, isScanning, error, scanFolder, resetFolder } = useFolderScanner();
+	const { folderData, isScanning, error, directoryHandle, scanFolder, resetFolder } = useFolderScanner();
 
 	return (
 		<div className="App">
 			<header className="app-header">
-				<h1>📊 Excel Generator</h1>
-				<p>Scan folders and count files for Excel generation</p>
+				<h1>📊 JSON to Excel Generator</h1>
+				<p>Convert JSON files from folders into Excel spreadsheets</p>
 			</header>
 			
 			<main className="app-main">
@@ -28,7 +28,7 @@ const App: React.FC = () => {
 				
 				{folderData && (
 					<div className="results-section">
-						<FolderResults folderData={folderData} />
+						<FolderResults folderData={folderData} directoryHandle={directoryHandle} />
 						<button 
 							onClick={resetFolder}
 							className="reset-btn"

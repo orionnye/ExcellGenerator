@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/static/css/main.882f2ace.css",
-    "main.js": "/static/js/main.cc07bfef.js",
-    "index.html": "/index.html",
-    "main.882f2ace.css.map": "/static/css/main.882f2ace.css.map",
-    "main.cc07bfef.js.map": "/static/js/main.cc07bfef.js.map"
+    "main.css": "/ExcellGenerator/static/css/main.38413197.css",
+    "main.js": "/ExcellGenerator/static/js/main.5cabdd7c.js",
+    "index.html": "/ExcellGenerator/index.html",
+    "main.38413197.css.map": "/ExcellGenerator/static/css/main.38413197.css.map",
+    "main.5cabdd7c.js.map": "/ExcellGenerator/static/js/main.5cabdd7c.js.map"
   },
   "entrypoints": [
-    "static/css/main.882f2ace.css",
-    "static/js/main.cc07bfef.js"
+    "static/css/main.38413197.css",
+    "static/js/main.5cabdd7c.js"
   ]
 }

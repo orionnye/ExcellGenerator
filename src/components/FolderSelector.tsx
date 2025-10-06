@@ -12,12 +12,6 @@ const FolderSelector: React.FC<FolderSelectorProps> = ({ onFolderSelect, isScann
 		setInputPath(e.target.value);
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		if (inputPath.trim()) {
-			onFolderSelect(inputPath.trim());
-		}
-	};
 
 	const handleFolderPicker = async () => {
 		try {
@@ -37,7 +31,7 @@ const FolderSelector: React.FC<FolderSelectorProps> = ({ onFolderSelect, isScann
 
 	return (
 		<div className="folder-selector">
-			<h2>Select Folder to Scan</h2>
+			<h2>Select Folder with JSON Files</h2>
 			
 			<div className="selector-options">
 				<button
@@ -61,7 +55,7 @@ const FolderSelector: React.FC<FolderSelectorProps> = ({ onFolderSelect, isScann
 						className="path-input disabled"
 					/>
 					<div className="info-text">
-						💡 Use the folder picker button above for real file scanning
+						💡 Use the folder picker button above to select a folder containing JSON files
 					</div>
 				</div>
 			</div>

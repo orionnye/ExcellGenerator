@@ -5,6 +5,7 @@ export const useFolderScanner = () => {
 	const [folderData, setFolderData] = useState<FolderData | null>(null);
 	const [isScanning, setIsScanning] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [directoryHandle, setDirectoryHandle] = useState<FileSystemDirectoryHandle | null>(null);
 
 	const scanFolder = useCallback(async (folderPath: string | FileSystemDirectoryHandle) => {
 		setIsScanning(true);
@@ -18,6 +19,7 @@ export const useFolderScanner = () => {
 				// Use File System Access API
 				actualPath = folderPath.name;
 				files = await scanDirectoryHandle(folderPath);
+				setDirectoryHandle(folderPath); // Store the directory handle for later use
 			} else {
 				// Manual path input - this would need a backend service
 				// For now, we'll show an error for manual paths
@@ -42,40 +44,45 @@ export const useFolderScanner = () => {
 	const resetFolder = useCallback(() => {
 		setFolderData(null);
 		setError(null);
+		setDirectoryHandle(null);
 	}, []);
 
 	return {
 		folderData,
 		isScanning,
 		error,
+		directoryHandle,
 		scanFolder,
 		resetFolder
 	};
 };
 
-// Helper function to recursively scan a directory handle
+// Helper function to recursively scan a directory handle for JSON files
 async function scanDirectoryHandle(
 	directoryHandle: FileSystemDirectoryHandle,
 	relativePath: string = ''
 ): Promise<string[]> {
 	const files: string[] = [];
 	
-		try {
-			for await (const [name, handle] of directoryHandle.entries()) {
-				const fullPath = relativePath ? `${relativePath}/${name}` : name;
-				
-				if (handle.kind === 'file') {
+	try {
+		for await (const [name, handle] of directoryHandle.entries()) {
+			const fullPath = relativePath ? `${relativePath}/${name}` : name;
+			
+			if (handle.kind === 'file') {
+				// Only include JSON files
+				if (name.toLowerCase().endsWith('.json')) {
 					files.push(fullPath);
-				} else if (handle.kind === 'directory') {
-					// Recursively scan subdirectories
-					const subFiles = await scanDirectoryHandle(handle as FileSystemDirectoryHandle, fullPath);
-					files.push(...subFiles);
 				}
+			} else if (handle.kind === 'directory') {
+				// Recursively scan subdirectories
+				const subFiles = await scanDirectoryHandle(handle as FileSystemDirectoryHandle, fullPath);
+				files.push(...subFiles);
 			}
-		} catch (error) {
-			console.error(`Error scanning directory ${relativePath}:`, error);
-			// Continue scanning other files/directories even if one fails
 		}
+	} catch (error) {
+		console.error(`Error scanning directory ${relativePath}:`, error);
+		// Continue scanning other files/directories even if one fails
+	}
 	
 	return files;
 }
