@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/ExcellGenerator/static/css/main.38413197.css",
+    "main.js": "/ExcellGenerator/static/js/main.5cabdd7c.js",
+    "index.html": "/ExcellGenerator/index.html",
+    "main.38413197.css.map": "/ExcellGenerator/static/css/main.38413197.css.map",
+    "main.5cabdd7c.js.map": "/ExcellGenerator/static/js/main.5cabdd7c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.38413197.css",
+    "static/js/main.5cabdd7c.js"
+  ]
+}
