@@ -1,0 +1,159 @@
+.file-metrics {
+  margin-top: 12px;
+  padding: 12px;
+  background-color: #1e1e1e;
+  border: 1px solid #3e3e42;
+  border-radius: 3px;
+}
+
+.file-metrics h4 {
+  margin: 0 0 16px 0;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.metric-card {
+  background: #2d2d30;
+  padding: 8px;
+  border-radius: 3px;
+  text-align: center;
+  border: 1px solid #3e3e42;
+}
+
+.metric-label {
+  font-size: 11px;
+  color: #858585;
+  margin-bottom: 4px;
+  font-weight: 400;
+}
+
+.metric-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.file-details {
+  margin: 8px 0;
+  padding: 8px;
+  background: #2d2d30;
+  border-radius: 3px;
+  border: 1px solid #3e3e42;
+}
+
+.file-details h5 {
+  margin: 0 0 8px 0;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.file-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.file-name {
+  flex: 1;
+  color: #cccccc;
+  font-size: 12px;
+  word-break: break-all;
+  margin-right: 8px;
+}
+
+.file-size {
+  color: #4ec9b0;
+  font-weight: 500;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.extension-breakdown {
+  margin-top: 12px;
+}
+
+.extension-breakdown h5 {
+  margin: 0 0 12px 0;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.extension-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.extension-item {
+  background: #2d2d30;
+  padding: 6px;
+  border-radius: 3px;
+  border: 1px solid #3e3e42;
+}
+
+.extension-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.extension-name {
+  font-weight: 600;
+  color: #ffffff;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.extension-count {
+  color: #858585;
+  font-size: 11px;
+}
+
+.extension-size {
+  color: #4ec9b0;
+  font-size: 11px;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.extension-bar {
+  width: 100%;
+  height: 4px;
+  background-color: #2d2d30;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.extension-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0e639c, #4ec9b0);
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .file-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .file-size {
+    align-self: flex-end;
+  }
+}

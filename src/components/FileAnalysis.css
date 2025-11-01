@@ -1,0 +1,132 @@
+.file-analysis {
+  margin-top: 12px;
+  padding: 12px;
+  background-color: #1e1e1e;
+  border: 1px solid #3e3e42;
+  border-radius: 3px;
+}
+
+.file-analysis h4 {
+  margin: 0 0 12px 0;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.analysis-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #3e3e42;
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 6px 12px;
+  color: #858585;
+  font-size: 12px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.1s ease;
+}
+
+.tab:hover {
+  color: #cccccc;
+}
+
+.tab.active {
+  color: #ffffff;
+  border-bottom-color: #0e639c;
+}
+
+.analysis-content {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.extensions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.extension-item {
+  background-color: #2d2d30;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  color: #cccccc;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.directories-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.directory-item {
+  padding: 6px 8px;
+  background-color: #2d2d30;
+  border-radius: 3px;
+  border: 1px solid #3e3e42;
+}
+
+.directory-name {
+  font-size: 12px;
+  color: #ffffff;
+  font-weight: 500;
+  margin-bottom: 2px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.directory-stats {
+  font-size: 11px;
+  color: #858585;
+}
+
+.duplicates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.duplicate-item {
+  padding: 6px 8px;
+  background-color: #2d2d30;
+  border-radius: 3px;
+  border: 1px solid #3e3e42;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.duplicate-name {
+  font-size: 12px;
+  color: #ffffff;
+  font-weight: 500;
+  flex: 1;
+  margin-right: 8px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.duplicate-size {
+  font-size: 11px;
+  color: #4ec9b0;
+  margin-right: 8px;
+}
+
+.duplicate-count {
+  font-size: 11px;
+  color: #da373c;
+  font-weight: 500;
+}
+
+.no-duplicates {
+  text-align: center;
+  color: #858585;
+  font-size: 12px;
+  padding: 20px;
+  font-style: italic;
+}

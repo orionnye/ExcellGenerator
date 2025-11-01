@@ -1,0 +1,257 @@
+.file-viewer {
+  height: calc(100vh - 120px); /* Full height minus header */
+  max-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  background-color: #252526;
+  border: 1px solid #3e3e42;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.file-viewer-header {
+  background-color: #2d2d30;
+  border-bottom: 1px solid #3e3e42;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.file-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.file-viewer-header h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-name {
+  color: #cccccc;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.file-size {
+  color: #858585;
+  font-size: 12px;
+  background-color: #1e1e1e;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.file-viewer-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.no-file-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #858585;
+  text-align: center;
+}
+
+.no-file-message p {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+.sub-text {
+  font-size: 12px;
+  color: #6a6a6a;
+}
+
+.loading-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #cccccc;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #3e3e42;
+  border-top: 2px solid #0e639c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-message p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #da373c;
+  text-align: center;
+}
+
+.error-message p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.file-content {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  background-color: #1e1e1e;
+  min-height: 0; /* Allow flex item to shrink below content size */
+}
+
+.file-content pre {
+  margin: 0;
+  color: #cccccc;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.json-content {
+  white-space: pre;
+}
+
+.json-key {
+  color: #569cd6; /* VSCode blue for keys */
+  font-weight: 400;
+}
+
+.search-filter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.search-input {
+  background-color: #1e1e1e;
+  border: 1px solid #3e3e42;
+  border-radius: 3px;
+  padding: 6px 12px;
+  color: #cccccc;
+  font-size: 13px;
+  font-family: inherit;
+  min-width: 200px;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: #0e639c;
+  background-color: #252526;
+}
+
+.search-input::placeholder {
+  color: #858585;
+}
+
+.search-clear-btn {
+  background-color: #3e3e42;
+  border: 1px solid #3e3e42;
+  border-radius: 3px;
+  color: #cccccc;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  transition: all 0.1s ease;
+}
+
+.search-clear-btn:hover {
+  background-color: #4e4e52;
+  border-color: #4e4e52;
+}
+
+.match-count-badge {
+  background-color: #0e639c;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 8px;
+}
+
+.search-highlight {
+  background-color: #ffd700; /* Gold highlight */
+  color: #1e1e1e;
+  padding: 2px 4px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+/* Scrollbar styling */
+.file-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.file-content::-webkit-scrollbar-track {
+  background: #2d2d30;
+}
+
+.file-content::-webkit-scrollbar-thumb {
+  background: #3e3e42;
+  border-radius: 4px;
+}
+
+.file-content::-webkit-scrollbar-thumb:hover {
+  background: #4e4e52;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .file-header-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .file-info {
+    align-self: flex-start;
+  }
+  
+  .search-filter {
+    width: 100%;
+  }
+  
+  .search-input {
+    flex: 1;
+    min-width: 0;
+  }
+}
