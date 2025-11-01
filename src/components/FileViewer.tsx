@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import './FileViewer.css';
 import { useFileReader } from '../hooks/useFileReader';
-import { highlightSearchTerms, getMatchCount } from '../utils/textHighlighter';
+import { getMatchCount } from '../utils/textHighlighter';
+import { detectDuplicateStructures } from '../utils/structureDetector';
+import { renderJsonWithStructures } from '../utils/jsonRenderer';
 
 const FileViewer: React.FC = () => {
   const { content, fileName, fileSize, isLoading, error } = useFileReader();
@@ -14,12 +16,28 @@ const FileViewer: React.FC = () => {
     return getMatchCount(content, searchTerm);
   }, [content, searchTerm]);
 
-  const highlightedContent = useMemo(() => {
-    if (!content || !searchTerm.trim()) {
+  // Detect duplicate structures
+  const structures = useMemo(() => {
+    if (!content) return [];
+    try {
+      const parsed = JSON.parse(content);
+      return detectDuplicateStructures(parsed);
+    } catch {
+      return [];
+    }
+  }, [content]);
+
+  // Render JSON with structure highlighting
+  const renderedContent = useMemo(() => {
+    if (!content) return null;
+    
+    try {
+      const rendered = renderJsonWithStructures(content, structures, searchTerm);
+      return rendered;
+    } catch {
       return content;
     }
-    return highlightSearchTerms(content, searchTerm);
-  }, [content, searchTerm]);
+  }, [content, structures, searchTerm]);
 
   if (!fileName) {
     return (
@@ -88,9 +106,7 @@ const FileViewer: React.FC = () => {
         
         {content && !isLoading && !error && (
           <div className="file-content">
-            <pre>
-              {highlightedContent}
-            </pre>
+            {renderedContent}
           </div>
         )}
       </div>

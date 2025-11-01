@@ -153,6 +153,79 @@
   font-weight: 400;
 }
 
+/* JSON renderer styles */
+.json-first-of-type {
+  background-color: rgba(255, 215, 0, 0.1); /* Subtle golden highlight */
+  border-left: 3px solid #ffd700;
+  padding-left: 8px;
+  margin-left: -8px;
+}
+
+.json-root-array {
+  display: block;
+}
+
+.json-array,
+.json-object {
+  display: block;
+  margin: 0;
+}
+
+.json-indent {
+  margin-left: 20px;
+}
+
+.json-item {
+  margin: 0;
+  padding: 0;
+}
+
+.json-bracket,
+.json-brace {
+  color: #cccccc;
+  font-weight: 600;
+}
+
+.json-comma {
+  color: #cccccc;
+}
+
+.json-colon {
+  color: #cccccc;
+}
+
+.json-string {
+  color: #ce9178; /* VSCode orange for strings */
+}
+
+.json-number {
+  color: #b5cea8; /* VSCode green for numbers */
+}
+
+.json-boolean {
+  color: #569cd6; /* VSCode blue for booleans */
+}
+
+.json-null {
+  color: #808080;
+  font-style: italic;
+}
+
+.json-undefined {
+  color: #808080;
+  font-style: italic;
+}
+
+.json-empty {
+  color: #858585;
+}
+
+.json-truncated,
+.json-unknown {
+  color: #858585;
+  font-style: italic;
+}
+
 .search-filter {
   display: flex;
   align-items: center;
