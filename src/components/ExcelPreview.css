@@ -11,11 +11,28 @@
   flex-shrink: 0;
 }
 
+.excel-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
 .excel-preview-header h3 {
   margin: 0;
   color: #ffffff;
   font-size: 16px;
   font-weight: 600;
+}
+
+.selection-count-badge {
+  background-color: #0e639c;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 10px;
+  white-space: nowrap;
 }
 
 .excel-preview-content {
@@ -211,7 +228,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px;
 }
 
 .excel-row:nth-child(even) {

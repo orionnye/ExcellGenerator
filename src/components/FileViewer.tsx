@@ -1,13 +1,29 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import './FileViewer.css';
 import { useFileReader } from '../hooks/useFileReader';
+import { useFileData } from '../contexts/FileDataContext';
 import { getMatchCount } from '../utils/textHighlighter';
 import { detectDuplicateStructures } from '../utils/structureDetector';
-import { renderJsonWithStructures } from '../utils/jsonRenderer';
+import { detectStructuresWithPaths } from '../utils/structurePathDetector';
+import { renderJsonWithStructures, renderJsonNode } from '../utils/jsonRenderer';
+import { JsonSelectionOverlay } from './JsonSelectionOverlay';
 
 const FileViewer: React.FC = () => {
   const { content, fileName, fileSize, isLoading, error } = useFileReader();
+  const { state, dispatch } = useFileData();
+  const { parsedJsonData, selectedObjectPaths } = state;
   const [searchTerm, setSearchTerm] = useState<string>('');
+
+  // Convert Set to sorted array for stable dependency checking
+  const selectedPathsArray = useMemo(() => {
+    return Array.from(selectedObjectPaths).sort();
+  }, [selectedObjectPaths]);
+  
+  // Detect structures at all depths with paths
+  const structurePaths = useMemo(() => {
+    if (!parsedJsonData) return [];
+    return detectStructuresWithPaths(parsedJsonData);
+  }, [parsedJsonData]);
 
   const matchCount = useMemo(() => {
     if (!content || !searchTerm.trim()) {
@@ -18,26 +34,55 @@ const FileViewer: React.FC = () => {
 
   // Detect duplicate structures
   const structures = useMemo(() => {
-    if (!content) return [];
-    try {
-      const parsed = JSON.parse(content);
-      return detectDuplicateStructures(parsed);
-    } catch {
-      return [];
-    }
-  }, [content]);
+    if (!parsedJsonData) return [];
+    return detectDuplicateStructures(parsedJsonData);
+  }, [parsedJsonData]);
 
-  // Render JSON with structure highlighting
+  // Handle object click for selection - use dispatch directly for stability
+  const handleObjectClick = useCallback((path: string) => {
+    dispatch({ type: 'TOGGLE_OBJECT_SELECTION', payload: path });
+  }, [dispatch]);
+
+  // Render JSON with structure highlighting (no selection overlay)
+  // path parameter is for future use, keeping signature compatible
+  const renderJsonContent = useCallback((item: any, path: string, isFirstOfType: boolean) => {
+    return renderJsonNode(item, { depth: 0, isFirstOfType, searchTerm });
+  }, [searchTerm]);
+
+  // Render JSON with selection overlay
   const renderedContent = useMemo(() => {
-    if (!content) return null;
+    if (!parsedJsonData) return null;
     
     try {
-      const rendered = renderJsonWithStructures(content, structures, searchTerm);
-      return rendered;
-    } catch {
-      return content;
+      // Render raw JSON with structure highlights
+      const baseRender = renderJsonWithStructures(
+        parsedJsonData, 
+        structures, 
+        searchTerm
+      );
+      
+      // Wrap with selection overlay if data is an object/array
+      if (Array.isArray(parsedJsonData) || (typeof parsedJsonData === 'object' && parsedJsonData !== null)) {
+        return (
+          <JsonSelectionOverlay
+            data={parsedJsonData}
+            structures={structures}
+            structurePaths={structurePaths}
+            selectedPaths={selectedObjectPaths}
+            onObjectClick={handleObjectClick}
+            renderContent={renderJsonContent}
+            searchTerm={searchTerm}
+          />
+        );
+      }
+      
+      // Primitive values don't need overlay
+      return baseRender;
+    } catch (error) {
+      console.error('Error rendering JSON:', error);
+      return <div className="error-message">Error rendering JSON content</div>;
     }
-  }, [content, structures, searchTerm]);
+  }, [parsedJsonData, structures, structurePaths, searchTerm, selectedPathsArray.join(','), handleObjectClick, renderJsonContent]);
 
   if (!fileName) {
     return (

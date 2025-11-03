@@ -129,16 +129,14 @@ export const renderJsonNode = (
 };
 
 /**
- * Renders JSON content with structure highlighting
+ * Renders JSON content with structure highlighting only (no selection/interaction)
  */
 export const renderJsonWithStructures = (
-  jsonText: string,
+  data: any,
   structures: StructureInfo[],
   searchTerm?: string
 ): React.ReactNode => {
   try {
-    const data = JSON.parse(jsonText);
-    
     // Handle array of objects - highlight first of each unique structure
     if (Array.isArray(data)) {
       return (
@@ -147,7 +145,7 @@ export const renderJsonWithStructures = (
           <div className="json-indent">
             {data.map((item, index) => {
               const structInfo = structures[index];
-              const isFirstOfType = structInfo?.isFirst && structInfo?.isDuplicate;
+              const isFirstOfType = (structInfo?.isFirst && structInfo?.isDuplicate) ?? false;
               
               return (
                 <div key={index} className="json-item">
@@ -163,9 +161,10 @@ export const renderJsonWithStructures = (
     }
     
     // Single object
-    if (typeof data === 'object') {
+    if (typeof data === 'object' && data !== null) {
       const structInfo = structures[0];
-      const isFirstOfType = structInfo?.isFirst && structInfo?.isDuplicate;
+      const isFirstOfType = (structInfo?.isFirst && structInfo?.isDuplicate) ?? false;
+      
       return renderJsonNode(data, { depth: 0, isFirstOfType, searchTerm });
     }
     
@@ -173,8 +172,8 @@ export const renderJsonWithStructures = (
     return renderJsonNode(data, { depth: 0, searchTerm });
     
   } catch (error) {
-    // If parsing fails, return plain text
-    return <span>{jsonText}</span>;
+    // If rendering fails, return error message
+    return <span className="json-error">Error rendering JSON</span>;
   }
 };
 

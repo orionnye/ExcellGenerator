@@ -4,15 +4,12 @@ export interface ExcelPreviewData {
 }
 
 /**
- * Generates Excel preview data from JSON text
- * @param jsonText - The JSON content as a string
- * @returns ExcelPreviewData with headers and rows, or null if parsing fails
+ * Generates Excel preview data from parsed JSON data
+ * @param data - The parsed JSON data (array or object)
+ * @returns ExcelPreviewData with headers and rows, or null if invalid
  */
-export const generateExcelFromJson = (jsonText: string): ExcelPreviewData | null => {
+export const generateExcelFromJsonData = (data: any): ExcelPreviewData | null => {
   try {
-    // Parse the JSON text
-    const data = JSON.parse(jsonText);
-    
     // Handle different JSON structures
     let rows: any[];
     
@@ -62,6 +59,22 @@ export const generateExcelFromJson = (jsonText: string): ExcelPreviewData | null
     };
   } catch (error) {
     console.error('Error generating Excel from JSON:', error);
+    return null;
+  }
+};
+
+/**
+ * Legacy function - generates Excel preview data from JSON text
+ * @param jsonText - The JSON content as a string
+ * @returns ExcelPreviewData with headers and rows, or null if parsing fails
+ * @deprecated Use generateExcelFromJsonData with parsed data instead
+ */
+export const generateExcelFromJson = (jsonText: string): ExcelPreviewData | null => {
+  try {
+    const data = JSON.parse(jsonText);
+    return generateExcelFromJsonData(data);
+  } catch (error) {
+    console.error('Error parsing JSON:', error);
     return null;
   }
 };

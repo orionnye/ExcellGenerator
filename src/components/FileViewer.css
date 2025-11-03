@@ -226,6 +226,33 @@
   font-style: italic;
 }
 
+/* Object selection and hover styles */
+.json-object-container {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 3px;
+  padding: 2px 4px;
+  margin: 2px 0;
+}
+
+.json-object-container:hover {
+  background-color: rgba(78, 110, 142, 0.2); /* Subtle blue hover */
+  border-left: 2px solid #4e6e8e;
+  padding-left: 6px;
+}
+
+.json-object-container.json-selected {
+  background-color: rgba(14, 99, 156, 0.25); /* VSCode blue for selected */
+  border-left: 3px solid #0e639c;
+  padding-left: 9px;
+}
+
+.json-object-container.json-selected:hover {
+  background-color: rgba(14, 99, 156, 0.35);
+  border-left-color: #1177bb;
+}
+
 .search-filter {
   display: flex;
   align-items: center;

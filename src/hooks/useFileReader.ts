@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useFileData } from '../contexts/FileDataContext';
 
 interface FileContent {
@@ -10,17 +10,24 @@ interface FileContent {
 }
 
 export const useFileReader = (): FileContent => {
-  const { state } = useFileData();
+  const { state, dispatch } = useFileData();
   const { files, folderHandle } = state;
   const [fileContent, setFileContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
+  
+  // Track last parsed content to avoid unnecessary updates
+  const lastContentRef = useRef<string>('');
 
   useEffect(() => {
     const loadFirstFile = async () => {
       if (files.length === 0 || !folderHandle) {
         setFileContent('');
         setError('');
+        if (lastContentRef.current !== '') {
+          dispatch({ type: 'SET_PARSED_JSON', payload: null });
+          lastContentRef.current = '';
+        }
         return;
       }
 
@@ -43,16 +50,33 @@ export const useFileReader = (): FileContent => {
         const content = await file.text();
         
         setFileContent(content);
+        
+        // Only parse and update if content actually changed
+        if (content !== lastContentRef.current) {
+          // Parse JSON and store in context (single source of truth)
+          try {
+            const parsed = JSON.parse(content);
+            dispatch({ type: 'SET_PARSED_JSON', payload: parsed });
+          } catch (parseError) {
+            // Not JSON or invalid JSON - store null
+            dispatch({ type: 'SET_PARSED_JSON', payload: null });
+          }
+          lastContentRef.current = content;
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load file');
         setFileContent('');
+        if (lastContentRef.current !== '') {
+          dispatch({ type: 'SET_PARSED_JSON', payload: null });
+          lastContentRef.current = '';
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     loadFirstFile();
-  }, [files, folderHandle]);
+  }, [files, folderHandle, dispatch]);
 
   const findFileHandle = async (
     directoryHandle: FileSystemDirectoryHandle, 
