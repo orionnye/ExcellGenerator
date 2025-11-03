@@ -86,11 +86,22 @@ const flattenObject = (obj: any, prefix: string = ''): Record<string, any> => {
         // Recursively flatten nested objects
         Object.assign(flattened, flattenObject(value, newKey));
       } else if (Array.isArray(value)) {
-        // Handle arrays by joining them or taking first element
-        if (value.length > 0) {
-          flattened[newKey] = value.join(', ');
-        } else {
+        // Handle arrays
+        if (value.length === 0) {
           flattened[newKey] = '';
+        } else {
+          // Check if array contains objects - if so, expand them
+          const firstItem = value[0];
+          if (typeof firstItem === 'object' && firstItem !== null && !Array.isArray(firstItem)) {
+            // Array of objects - expand into indexed columns
+            value.forEach((item, index) => {
+              const indexedKey = `${newKey}[${index}]`;
+              Object.assign(flattened, flattenObject(item, indexedKey));
+            });
+          } else {
+            // Array of primitives - join them
+            flattened[newKey] = value.join(', ');
+          }
         }
       } else {
         // Primitive value
