@@ -1,22 +1,23 @@
 import React from 'react';
-import { StructureInfo } from './structureDetector';
 
 interface RenderNodeOptions {
   depth: number;
   maxDepth?: number;
-  structureInfo?: StructureInfo;
-  isFirstOfType?: boolean;
   searchTerm?: string;
 }
 
 /**
- * Renders a JSON value as a React component with structure highlighting
+ * Renders a JSON value as a React component with search highlighting
  */
 export const renderJsonNode = (
   value: any,
   options: RenderNodeOptions = { depth: 0 }
 ): React.ReactNode => {
-  const { depth, maxDepth = 10, isFirstOfType = false, searchTerm } = options;
+  const { 
+    depth, 
+    maxDepth = 10, 
+    searchTerm, 
+  } = options;
   
   const highlightSearch = (text: string): React.ReactNode => {
     if (!searchTerm || !text.toLowerCase().includes(searchTerm.toLowerCase())) {
@@ -88,12 +89,17 @@ export const renderJsonNode = (
       <div className="json-array">
         <span className="json-bracket">[</span>
         <div className="json-indent">
-          {value.map((item, index) => (
-            <div key={index} className="json-item">
-              {renderJsonNode(item, { ...options, depth: depth + 1 })}
-              {index < value.length - 1 && <span className="json-comma">,</span>}
-            </div>
-          ))}
+          {value.map((item, index) => {
+            return (
+              <div 
+                key={index} 
+                className="json-item"
+              >
+                {renderJsonNode(item, { ...options, depth: depth + 1 })}
+                {index < value.length - 1 && <span className="json-comma">,</span>}
+              </div>
+            );
+          })}
         </div>
         <span className="json-bracket">]</span>
       </div>
@@ -108,17 +114,22 @@ export const renderJsonNode = (
     }
     
     return (
-      <div className={`json-object ${isFirstOfType ? 'json-first-of-type' : ''}`}>
+      <div className="json-object">
         <span className="json-brace">{'{'}</span>
         <div className="json-indent">
-          {keys.map((key, index) => (
-            <div key={key} className="json-item">
-              <span className="json-key">"{highlightSearch(key)}"</span>
-              <span className="json-colon">: </span>
-              {renderJsonNode(value[key], { ...options, depth: depth + 1 })}
-              {index < keys.length - 1 && <span className="json-comma">,</span>}
-            </div>
-          ))}
+          {keys.map((key, index) => {
+            return (
+              <div 
+                key={key} 
+                className="json-item"
+              >
+                <span className="json-key">"{highlightSearch(key)}"</span>
+                <span className="json-colon">: </span>
+                {renderJsonNode(value[key], { ...options, depth: depth + 1 })}
+                {index < keys.length - 1 && <span className="json-comma">,</span>}
+              </div>
+            );
+          })}
         </div>
         <span className="json-brace">{'}'}</span>
       </div>
@@ -126,54 +137,5 @@ export const renderJsonNode = (
   }
   
   return <span className="json-unknown">{String(value)}</span>;
-};
-
-/**
- * Renders JSON content with structure highlighting only (no selection/interaction)
- */
-export const renderJsonWithStructures = (
-  data: any,
-  structures: StructureInfo[],
-  searchTerm?: string
-): React.ReactNode => {
-  try {
-    // Handle array of objects - highlight first of each unique structure
-    if (Array.isArray(data)) {
-      return (
-        <div className="json-root-array">
-          <span className="json-bracket">[</span>
-          <div className="json-indent">
-            {data.map((item, index) => {
-              const structInfo = structures[index];
-              const isFirstOfType = (structInfo?.isFirst && structInfo?.isDuplicate) ?? false;
-              
-              return (
-                <div key={index} className="json-item">
-                  {renderJsonNode(item, { depth: 0, isFirstOfType, searchTerm })}
-                  {index < data.length - 1 && <span className="json-comma">,</span>}
-                </div>
-              );
-            })}
-          </div>
-          <span className="json-bracket">]</span>
-        </div>
-      );
-    }
-    
-    // Single object
-    if (typeof data === 'object' && data !== null) {
-      const structInfo = structures[0];
-      const isFirstOfType = (structInfo?.isFirst && structInfo?.isDuplicate) ?? false;
-      
-      return renderJsonNode(data, { depth: 0, isFirstOfType, searchTerm });
-    }
-    
-    // Primitive value
-    return renderJsonNode(data, { depth: 0, searchTerm });
-    
-  } catch (error) {
-    // If rendering fails, return error message
-    return <span className="json-error">Error rendering JSON</span>;
-  }
 };
 
