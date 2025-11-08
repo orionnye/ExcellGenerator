@@ -47,10 +47,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .file-item:last-child {
   border-bottom: none;
+}
+
+.file-item-selected {
+  background-color: rgba(14, 99, 156, 0.2);
+  border-left: 3px solid #0e639c;
+  padding-left: 5px;
+}
+
+.file-item-selected .file-name {
+  color: #ffffff;
+  font-weight: 500;
 }
 
 .file-name {

@@ -4,6 +4,7 @@ import FileBrowser from './components/FileBrowser';
 import FileViewer from './components/FileViewer';
 import ExcelPreview from './components/ExcelPreview';
 import { FileDataProvider } from './contexts/FileDataContext';
+import { MemoryDisplay } from './components/MemoryDisplay';
 
 function App() {
   const handleFolderSelected = (folderHandle: FileSystemDirectoryHandle) => {
@@ -14,8 +15,13 @@ function App() {
     <FileDataProvider>
       <div className="App">
         <header className="App-header">
-          <h1>Folder Browser Demo</h1>
-          <p>Select a folder to see it logged in the console</p>
+          <div className="header-content">
+            <div>
+              <h1>Folder Browser Demo</h1>
+              <p>Select a folder to see it logged in the console</p>
+            </div>
+            <MemoryDisplay />
+          </div>
         </header>
         
         <main className="App-main">

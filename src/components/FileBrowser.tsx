@@ -3,7 +3,6 @@ import './FileBrowser.css';
 import FileList from './FileList';
 import FileMetrics from './FileMetrics';
 import ClearButton from './ClearButton';
-import { scanDirectory } from '../utils/directoryScanner';
 import { useFileData, useFileDataActions } from '../contexts/FileDataContext';
 
 interface FileBrowserProps {
@@ -12,13 +11,11 @@ interface FileBrowserProps {
 
 const FileBrowser: React.FC<FileBrowserProps> = ({ onFolderSelected }) => {
   const { state } = useFileData();
-  const { setFolder, setFiles, setLoading } = useFileDataActions();
-  const { folderHandle, files, isLoading } = state;
+  const { scanFolder } = useFileDataActions();
+  const { folderHandle, files, processState } = state;
 
   const handleFolderSelection = async () => {
     try {
-      setLoading(true);
-      
       if (!('showDirectoryPicker' in window)) {
         alert('File System Access API not supported. Please use Chrome or Edge.');
         return;
@@ -28,12 +25,8 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onFolderSelected }) => {
       
       console.log('Selected folder:', folderHandle.name);
       
-      // Automatically scan the selected folder
-      const fileList = await scanDirectory(folderHandle);
-      console.log('Files found:', fileList);
-      
-      setFolder(folderHandle);
-      setFiles(fileList);
+      // Dispatch action to start scanning - state machine handles the rest
+      scanFolder(folderHandle);
       onFolderSelected?.(folderHandle);
       
     } catch (error) {
@@ -41,8 +34,6 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onFolderSelected }) => {
         console.error('Error selecting folder:', error);
         alert('Error selecting folder: ' + error.message);
       }
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -56,14 +47,14 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onFolderSelected }) => {
       <div className="browser-controls">
         <button 
           onClick={handleFolderSelection}
-          disabled={isLoading}
+          disabled={processState === 'scanning'}
           className="browser-btn folder-btn"
         >
-          {isLoading ? 'Scanning...' : '📂 Select Folder'}
+          {processState === 'scanning' ? 'Scanning...' : '📂 Select Folder'}
         </button>
         
         <ClearButton 
-          disabled={isLoading}
+          disabled={processState === 'scanning'}
         />
       </div>
 

@@ -1,89 +1,47 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
 import './FileViewer.css';
 import { useFileReader } from '../hooks/useFileReader';
-import { useFileData } from '../contexts/FileDataContext';
+import { useFileDataActions } from '../contexts/FileDataContext';
+import { useFileViewerData } from '../hooks/useFileViewerData';
 import { getMatchCount } from '../utils/textHighlighter';
-import { detectDuplicateStructures } from '../utils/structureDetector';
-import { detectStructuresWithPaths } from '../utils/structurePathDetector';
-import { renderJsonWithStructures, renderJsonNode } from '../utils/jsonRenderer';
-import { JsonSelectionOverlay } from './JsonSelectionOverlay';
+import { renderJsonNode } from '../utils/jsonRenderer';
+import { formatFileSize } from '../utils/fileSizeFormatter';
 
 const FileViewer: React.FC = () => {
   const { content, fileName, fileSize, isLoading, error } = useFileReader();
-  const { state, dispatch } = useFileData();
-  const { parsedJsonData, selectedObjectPaths } = state;
+  const { loadFile, parseJson } = useFileDataActions();
+  const { parsedJsonData, fileContent, processState } = useFileViewerData();
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  // Convert Set to sorted array for stable dependency checking
-  const selectedPathsArray = useMemo(() => {
-    return Array.from(selectedObjectPaths).sort();
-  }, [selectedObjectPaths]);
-  
-  // Detect structures at all depths with paths
-  const structurePaths = useMemo(() => {
-    if (!parsedJsonData) return [];
-    return detectStructuresWithPaths(parsedJsonData);
-  }, [parsedJsonData]);
-
+  // Only calculate match count if search term exists (performance optimization)
   const matchCount = useMemo(() => {
     if (!content || !searchTerm.trim()) {
       return 0;
     }
+    // Skip calculation for very large files to avoid blocking
+    const fileSizeKB = fileSize / 1024;
+    if (fileSizeKB > 10000) { // 10MB+ files
+      return 0; // Don't block UI with regex on huge files
+    }
     return getMatchCount(content, searchTerm);
-  }, [content, searchTerm]);
+  }, [content, searchTerm, fileSize]);
 
-  // Detect duplicate structures
-  const structures = useMemo(() => {
-    if (!parsedJsonData) return [];
-    return detectDuplicateStructures(parsedJsonData);
-  }, [parsedJsonData]);
-
-  // Handle object click for selection - use dispatch directly for stability
-  const handleObjectClick = useCallback((path: string) => {
-    dispatch({ type: 'TOGGLE_OBJECT_SELECTION', payload: path });
-  }, [dispatch]);
-
-  // Render JSON with structure highlighting (no selection overlay)
-  // path parameter is for future use, keeping signature compatible
-  const renderJsonContent = useCallback((item: any, path: string, isFirstOfType: boolean) => {
-    return renderJsonNode(item, { depth: 0, isFirstOfType, searchTerm });
-  }, [searchTerm]);
-
-  // Render JSON with selection overlay
+  // Render JSON content
   const renderedContent = useMemo(() => {
     if (!parsedJsonData) return null;
     
     try {
-      // Render raw JSON with structure highlights
-      const baseRender = renderJsonWithStructures(
-        parsedJsonData, 
-        structures, 
-        searchTerm
-      );
-      
-      // Wrap with selection overlay if data is an object/array
-      if (Array.isArray(parsedJsonData) || (typeof parsedJsonData === 'object' && parsedJsonData !== null)) {
-        return (
-          <JsonSelectionOverlay
-            data={parsedJsonData}
-            structures={structures}
-            structurePaths={structurePaths}
-            selectedPaths={selectedObjectPaths}
-            onObjectClick={handleObjectClick}
-            renderContent={renderJsonContent}
-            searchTerm={searchTerm}
-          />
-        );
-      }
-      
-      // Primitive values don't need overlay
-      return baseRender;
+      return renderJsonNode(parsedJsonData, { 
+        depth: 0, 
+        searchTerm,
+      });
     } catch (error) {
       console.error('Error rendering JSON:', error);
       return <div className="error-message">Error rendering JSON content</div>;
     }
-  }, [parsedJsonData, structures, structurePaths, searchTerm, selectedPathsArray.join(','), handleObjectClick, renderJsonContent]);
+  }, [parsedJsonData, searchTerm]);
 
+  // Show empty state with load button
   if (!fileName) {
     return (
       <div className="file-viewer">
@@ -93,7 +51,67 @@ const FileViewer: React.FC = () => {
         <div className="file-viewer-content">
           <div className="no-file-message">
             <p>No files selected</p>
-            <p className="sub-text">Select a folder to view file contents</p>
+            <p className="sub-text">Select a file from the folder browser to view its contents</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show load button if file is selected but not loaded
+  if (!fileContent && !isLoading && processState === 'filesLoaded') {
+    return (
+      <div className="file-viewer">
+        <div className="file-viewer-header">
+          <h3>File Viewer</h3>
+          <div className="file-header-content">
+            <div className="file-info">
+              <span className="file-name">{fileName}</span>
+              <span className="file-size">({formatFileSize(fileSize)})</span>
+            </div>
+          </div>
+        </div>
+        <div className="file-viewer-content">
+          <div className="no-file-message">
+            <p>File selected: <strong>{fileName}</strong></p>
+            <p className="placeholder-subtext">Click the button below to load and parse the file</p>
+            <button 
+              onClick={loadFile}
+              className="generate-excel-btn"
+              disabled={isLoading}
+            >
+              📄 Load File
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show parse button if file is loaded but not parsed
+  if (fileContent && !parsedJsonData && !isLoading && processState === 'fileLoaded') {
+    return (
+      <div className="file-viewer">
+        <div className="file-viewer-header">
+          <h3>File Viewer</h3>
+          <div className="file-header-content">
+            <div className="file-info">
+              <span className="file-name">{fileName}</span>
+              <span className="file-size">({formatFileSize(fileSize)})</span>
+            </div>
+          </div>
+        </div>
+        <div className="file-viewer-content">
+          <div className="no-file-message">
+            <p>File loaded: <strong>{fileName}</strong></p>
+            <p className="placeholder-subtext">Click the button below to parse JSON and display content</p>
+            <button 
+              onClick={parseJson}
+              className="generate-excel-btn"
+              disabled={isLoading}
+            >
+              🔍 Parse JSON
+            </button>
           </div>
         </div>
       </div>
@@ -107,7 +125,7 @@ const FileViewer: React.FC = () => {
         <div className="file-header-content">
           <div className="file-info">
             <span className="file-name">{fileName}</span>
-            <span className="file-size">({Math.round(fileSize / 1024)} KB)</span>
+            <span className="file-size">({formatFileSize(fileSize)})</span>
             {searchTerm.trim() && matchCount > 0 && (
               <span className="match-count-badge" title={`${matchCount} matches found`}>
                 🔍 {matchCount} matches

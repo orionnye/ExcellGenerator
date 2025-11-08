@@ -1,6 +1,6 @@
 import React from 'react';
 import './FileList.css';
-import { FileInfo } from '../contexts/FileDataContext';
+import { FileInfo, useFileData, useFileDataActions } from '../contexts/FileDataContext';
 import { formatFileSize } from '../utils/fileSizeFormatter';
 
 interface FileListProps {
@@ -9,9 +9,17 @@ interface FileListProps {
 }
 
 const FileList: React.FC<FileListProps> = ({ files, folderName }) => {
+  const { state } = useFileData();
+  const { selectFile } = useFileDataActions();
+  const { selectedFilePath } = state;
+
   if (files.length === 0) {
     return null;
   }
+
+  const handleFileClick = (filePath: string) => {
+    selectFile(filePath);
+  };
 
   return (
     <div className="file-list">
@@ -22,12 +30,20 @@ const FileList: React.FC<FileListProps> = ({ files, folderName }) => {
       
       <div className="file-list-container">
         <ul>
-          {files.map((file, index) => (
-            <li key={index} className="file-item">
-              <span className="file-name">{file.name}</span>
-              <span className="file-size">{formatFileSize(file.size)}</span>
-            </li>
-          ))}
+          {files.map((file, index) => {
+            const isSelected = file.path === selectedFilePath;
+            return (
+              <li 
+                key={index} 
+                className={`file-item ${isSelected ? 'file-item-selected' : ''}`}
+                onClick={() => handleFileClick(file.path)}
+                title={isSelected ? 'Currently viewing' : 'Click to view in JSON inspector'}
+              >
+                <span className="file-name">{file.name}</span>
+                <span className="file-size">{formatFileSize(file.size)}</span>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

@@ -3,12 +3,17 @@ import './ExcelPreview.css';
 import { useExcelGenerator } from '../hooks/useExcelGenerator';
 import { useColumnFilter } from '../hooks/useColumnFilter';
 import { useColumnDragDrop } from '../hooks/useColumnDragDrop';
-import { useFileData } from '../contexts/FileDataContext';
+import { useFileData, useFileDataActions } from '../contexts/FileDataContext';
 
 const ExcelPreview: React.FC = () => {
+  // Excel Preview temporarily disabled - rethinking data formatting approach
+  return null;
+  
+  /* DISABLED - Rethinking Excel generation approach
   const excelData = useExcelGenerator();
   const { state } = useFileData();
-  const { selectedObjectPaths } = state;
+  const { generateExcel } = useFileDataActions();
+  const { parsedJsonData, processState } = state;
   const columnFilter = useColumnFilter(excelData?.headers.length || 0);
   const { hiddenColumns, toggleColumn, showAllColumns, isColumnVisible, hiddenCount } = columnFilter;
   const { columnOrder, draggedColumn, handleDragStart, handleDragOver, handleDrop, handleDragEnd } = 
@@ -55,31 +60,48 @@ const ExcelPreview: React.FC = () => {
   return (
     <div className="excel-preview">
       <div className="excel-preview-header">
-        <div className="excel-header-content">
-          <h3>📊 Excel Preview</h3>
-          {selectedObjectPaths.size > 0 && (
-            <span className="selection-count-badge" title={`${selectedObjectPaths.size} paths selected`}>
-              {selectedObjectPaths.size} selected
-            </span>
-          )}
-        </div>
+        <h3>📊 Excel Preview</h3>
       </div>
       
-      <div className="excel-preview-content">
-        {!excelData && (
-          <div className="excel-placeholder">
-            <div className="placeholder-icon">📊</div>
-            <h4>Excel Preview</h4>
-            <p>{selectedObjectPaths.size === 0 
-              ? 'Select items in the JSON viewer to preview Excel data' 
-              : 'Generating spreadsheet from selected data...'}</p>
-            <p className="placeholder-subtext">
-              {selectedObjectPaths.size === 0
-                ? 'Click objects in the JSON viewer to select them'
-                : 'Column headers and data will appear here'}
-            </p>
-          </div>
-        )}
+              <div className="excel-preview-content">
+                {!excelData && !parsedJsonData && (
+                  <div className="excel-placeholder">
+                    <div className="placeholder-icon">📊</div>
+                    <h4>Excel Preview</h4>
+                    <p>No JSON data available</p>
+                    <p className="placeholder-subtext">
+                      Parse a JSON file in the File Viewer to generate Excel data
+                    </p>
+                  </div>
+                )}
+                
+                {!excelData && parsedJsonData && processState === 'jsonParsed' && (
+                  <div className="excel-placeholder">
+                    <div className="placeholder-icon">📊</div>
+                    <h4>Excel Preview</h4>
+                    <p>JSON data ready</p>
+                    <p className="placeholder-subtext">
+                      Click the button below to generate Excel spreadsheet
+                    </p>
+                    <button 
+                      onClick={generateExcel}
+                      className="generate-excel-btn"
+                    >
+                      📊 Generate Excel
+                    </button>
+                  </div>
+                )}
+                
+                {!excelData && parsedJsonData && processState === 'generatingExcel' && (
+                  <div className="excel-placeholder">
+                    <div className="placeholder-icon">📊</div>
+                    <h4>Excel Preview</h4>
+                    <p>Generating spreadsheet from JSON data...</p>
+                    <p className="placeholder-subtext">
+                      Column headers and data will appear here
+                    </p>
+                  </div>
+                )}
         
         {excelData && excelData.headers.length === 0 && (
           <div className="excel-placeholder">
@@ -146,12 +168,6 @@ const ExcelPreview: React.FC = () => {
                             <span 
                               className="header-text" 
                               title={header}
-                              style={{ 
-                                maxWidth: `${(columnWidths[originalIndex] || 200) - 60}px`,
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap'
-                              }}
                             >
                               {header}
                             </span>
@@ -185,6 +201,7 @@ const ExcelPreview: React.FC = () => {
       </div>
     </div>
   );
+  */
 };
 
 export default ExcelPreview;
