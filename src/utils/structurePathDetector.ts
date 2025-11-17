@@ -2,35 +2,14 @@
  * Detects structures at all depths with path tracking
  */
 
+import { getMemoizedStructureSignature } from './structureSignatureMemoizer';
+
 export interface StructurePathInfo {
   path: string; // e.g., "0", "0.items", "1.items[0]", "root.user.profile"
   structure: string; // Sorted keys string representation
   isFirstOfType: boolean; // Whether this is the first of its type
   isDuplicate: boolean; // Whether this structure appears multiple times
 }
-
-/**
- * Gets the structural signature of an object (sorted keys)
- */
-const getStructureSignature = (obj: any): string => {
-  if (obj === null || obj === undefined) {
-    return '';
-  }
-  
-  if (Array.isArray(obj)) {
-    if (obj.length === 0) {
-      return '[]';
-    }
-    return `[${obj.length}]:${getStructureSignature(obj[0])}`;
-  }
-  
-  if (typeof obj === 'object') {
-    const keys = Object.keys(obj).sort();
-    return keys.join('|');
-  }
-  
-  return typeof obj;
-};
 
 /**
  * Detects all structures at all depths with their paths
@@ -53,7 +32,7 @@ export const detectStructuresWithPaths = (
         const itemPath = path ? `${path}[${index}]` : `[${index}]`;
         
         if (typeof item === 'object' && item !== null) {
-          const structure = getStructureSignature(item);
+          const structure = getMemoizedStructureSignature(item);
           
           if (!structureGroups.has(structure)) {
             structureGroups.set(structure, []);
@@ -71,7 +50,7 @@ export const detectStructuresWithPaths = (
       });
     } else if (typeof obj === 'object') {
       // Check if this object has a structure worth tracking
-      const structure = getStructureSignature(obj);
+      const structure = getMemoizedStructureSignature(obj);
       
       if (structure && structure !== '[]') {
         if (!structureGroups.has(structure)) {

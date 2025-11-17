@@ -2,6 +2,7 @@ import React, { useMemo, useState, useCallback } from 'react';
 import './FileViewer.css';
 import { useFileReader } from '../hooks/useFileReader';
 import { useFileData } from '../contexts/FileDataContext';
+import { usePerformanceMetricsContext } from '../contexts/PerformanceMetricsContext';
 import { getMatchCount } from '../utils/textHighlighter';
 import { detectDuplicateStructures } from '../utils/structureDetector';
 import { detectStructuresWithPaths } from '../utils/structurePathDetector';
@@ -13,6 +14,7 @@ const FileViewer: React.FC = () => {
   const { state, dispatch } = useFileData();
   const { parsedJsonData, selectedObjectPaths } = state;
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const { trackStructureDetection } = usePerformanceMetricsContext();
 
   // Convert Set to sorted array for stable dependency checking
   const selectedPathsArray = useMemo(() => {
@@ -22,8 +24,12 @@ const FileViewer: React.FC = () => {
   // Detect structures at all depths with paths
   const structurePaths = useMemo(() => {
     if (!parsedJsonData) return [];
-    return detectStructuresWithPaths(parsedJsonData);
-  }, [parsedJsonData]);
+    const start = performance.now();
+    const result = detectStructuresWithPaths(parsedJsonData);
+    const duration = performance.now() - start;
+    trackStructureDetection(duration);
+    return result;
+  }, [parsedJsonData, trackStructureDetection]);
 
   const matchCount = useMemo(() => {
     if (!content || !searchTerm.trim()) {

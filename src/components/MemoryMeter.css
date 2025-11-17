@@ -1,0 +1,67 @@
+.memory-meter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background-color: #252526;
+  border-left: 1px solid #3e3e42;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+  height: 22px;
+  cursor: default;
+  user-select: none;
+  transition: background-color 0.1s ease;
+}
+
+.memory-meter:hover {
+  background-color: #2d2d30;
+}
+
+.memory-meter-icon {
+  display: flex;
+  align-items: center;
+  color: #cccccc;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.memory-meter-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #cccccc;
+  white-space: nowrap;
+}
+
+.memory-used {
+  font-weight: 600;
+  color: #4ec9b0;
+}
+
+.memory-separator {
+  color: #858585;
+  font-weight: 400;
+}
+
+.memory-total {
+  color: #cccccc;
+  font-weight: 400;
+}
+
+.memory-meter-bar {
+  width: 48px;
+  height: 3px;
+  background-color: #1e1e1e;
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-left: 2px;
+}
+
+.memory-bar-fill {
+  height: 100%;
+  background-color: #4ec9b0;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+

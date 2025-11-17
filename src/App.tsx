@@ -3,7 +3,10 @@ import './App.css';
 import FileBrowser from './components/FileBrowser';
 import FileViewer from './components/FileViewer';
 import ExcelPreview from './components/ExcelPreview';
+import MemoryMeter from './components/MemoryMeter';
+import PerformanceMetrics from './components/PerformanceMetrics';
 import { FileDataProvider } from './contexts/FileDataContext';
+import { PerformanceMetricsProvider } from './contexts/PerformanceMetricsContext';
 
 function App() {
   const handleFolderSelected = (folderHandle: FileSystemDirectoryHandle) => {
@@ -12,10 +15,17 @@ function App() {
 
   return (
     <FileDataProvider>
-      <div className="App">
+      <PerformanceMetricsProvider>
+        <div className="App">
         <header className="App-header">
-          <h1>Folder Browser Demo</h1>
-          <p>Select a folder to see it logged in the console</p>
+          <div className="header-content">
+            <div className="header-text">
+              <h1>Folder Browser Demo</h1>
+              <p>Select a folder to see it logged in the console</p>
+            </div>
+            <PerformanceMetrics />
+            <MemoryMeter />
+          </div>
         </header>
         
         <main className="App-main">
@@ -32,6 +42,7 @@ function App() {
           </div>
         </main>
       </div>
+      </PerformanceMetricsProvider>
     </FileDataProvider>
   );
 }

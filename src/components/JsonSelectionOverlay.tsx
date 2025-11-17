@@ -2,6 +2,7 @@ import React from 'react';
 import { StructureInfo } from '../utils/structureDetector';
 import { StructurePathInfo } from '../utils/structurePathDetector';
 import { extractRelativePath, findAllMatchingPaths } from '../utils/pathPatternMatcher';
+import { getMemoizedStructureSignature } from '../utils/structureSignatureMemoizer';
 
 interface JsonSelectionOverlayProps {
   data: any;
@@ -18,6 +19,51 @@ interface JsonSelectionOverlayProps {
  */
 const findStructurePathInfo = (structurePaths: StructurePathInfo[], path: string): StructurePathInfo | undefined => {
   return structurePaths.find(sp => sp.path === path);
+};
+
+/**
+ * Helper to handle object/array click - selects root-level array items with same structure,
+ * or uses pattern matching for nested paths
+ */
+const handleSelectionClick = (
+  currentPath: string,
+  pathInfo: StructurePathInfo | undefined,
+  data: any,
+  onObjectClick: (path: string) => void
+): void => {
+  // For root-level array items (paths like "0", "1", "2"), select all items with same structure
+  const isRootArrayItem = /^\d+$/.test(currentPath);
+  
+  if (isRootArrayItem && Array.isArray(data)) {
+    // Root-level array item: select all items with the same structure
+    const clickedIndex = parseInt(currentPath, 10);
+    const clickedItem = data[clickedIndex];
+    
+    if (clickedItem !== undefined && typeof clickedItem === 'object' && clickedItem !== null) {
+      // Use pathInfo structure if available, otherwise compute it
+      const clickedStructure = pathInfo?.structure || getMemoizedStructureSignature(clickedItem);
+      
+      if (clickedStructure) {
+        // Find all root-level items with the same structure
+        data.forEach((item, index) => {
+          if (typeof item === 'object' && item !== null) {
+            const itemStructure = getMemoizedStructureSignature(item);
+            if (itemStructure === clickedStructure) {
+              onObjectClick(index.toString());
+            }
+          }
+        });
+      } else {
+        // Fallback: if structure can't be determined, just select the clicked item
+        onObjectClick(currentPath);
+      }
+    }
+  } else {
+    // Nested path: extract relative path pattern and find all matches
+    const relativePattern = extractRelativePath(currentPath);
+    const allMatches = findAllMatchingPaths(data, relativePattern);
+    allMatches.forEach(path => onObjectClick(path));
+  }
 };
 
 /**
@@ -84,17 +130,7 @@ export const JsonSelectionOverlay: React.FC<JsonSelectionOverlayProps> = ({
             className={`json-object-container ${isSelected ? 'json-selected' : ''}`}
             onClick={(e) => {
               e.stopPropagation();
-              // Extract relative path pattern (e.g., "heartRateZones[1]" from "0.heartRateZones[1]")
-              const relativePattern = extractRelativePath(currentPath);
-              // Find all paths matching this pattern across all objects
-              const allMatches = findAllMatchingPaths(data, relativePattern);
-              
-              console.log('Full path:', currentPath);
-              console.log('Relative pattern:', relativePattern);
-              console.log('All matching paths:', allMatches);
-              
-              // Select all matching paths
-              allMatches.forEach(path => onObjectClick(path));
+              handleSelectionClick(currentPath, pathInfo, data, onObjectClick);
             }}
             title={isSelected ? 'Click to remove from Excel' : 'Click to add to Excel'}
           >
@@ -162,17 +198,7 @@ export const JsonSelectionOverlay: React.FC<JsonSelectionOverlayProps> = ({
             className={`json-object-container ${isSelected ? 'json-selected' : ''}`}
             onClick={(e) => {
               e.stopPropagation();
-              // Extract relative path pattern (e.g., "heartRateZones[1]" from "0.heartRateZones[1]")
-              const relativePattern = extractRelativePath(currentPath);
-              // Find all paths matching this pattern across all objects
-              const allMatches = findAllMatchingPaths(data, relativePattern);
-              
-              console.log('Full path:', currentPath);
-              console.log('Relative pattern:', relativePattern);
-              console.log('All matching paths:', allMatches);
-              
-              // Select all matching paths
-              allMatches.forEach(path => onObjectClick(path));
+              handleSelectionClick(currentPath, pathInfo, data, onObjectClick);
             }}
             title={isSelected ? 'Click to remove from Excel' : 'Click to add to Excel'}
           >
