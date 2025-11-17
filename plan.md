@@ -49,11 +49,7 @@
 
 ### High Priority
 
-1. **Performance Metrics Display Epic** - Display real-time performance metrics in header. Helps users understand operation performance and identify bottlenecks.
-
-2. **Root-Level Selection Debugging & Logging Epic** - Critical for diagnosing root-level selection issues. Will help understand why selections fail and provide visibility into the selection flow.
-
-3. **Code Cleanup & Commit** - Multiple uncommitted changes including completed features. Should commit completed work before starting new epic.
+1. **Root-Level Selection Debugging & Logging Epic** - Critical for diagnosing root-level selection issues. Will help understand why selections fail and provide visibility into the selection flow.
 
 ### Medium Priority
 
